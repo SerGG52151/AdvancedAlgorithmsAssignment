@@ -15,8 +15,28 @@ C2 = [("Q10", "Assorted Gadgets", 10, 60), ("Q20", "Party Drinks Pallet", 20, 10
 
 W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
 
-def solve_method(products: List[Tuple[str, str, int, int]],
-                 capacity_W: int) -> Tuple[int, List[str]]:
+def solve_greedy(products: List[Tuple[str, str, int, int]], capacity_W: int) -> (int, List[str]):
+    # Calcular valor y peso para cada producto
+    products_with_ratio = []
+    for pid, name, weight, value in products:
+        ratio = value / weight
+        products_with_ratio.append((pid, name, weight, value, ratio))
+
+    # Ordenar con los criterios
+    products_with_ratio.sort(key=lambda x: (-x[4], x[2], x[0]))
+    chosen_ids = []
+    total_value = 0
+    used_weight = 0
+
+    for pid, name, weight, value, ratio in products_with_ratio:
+        if used_weight + weight <= capacity_W:
+            chosen_ids.append(pid)
+            total_value += value
+            used_weight += weight
+
+    return total_value, chosen_ids
+
+def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> Tuple[int, List[str]]:
 
     # Aplica la regla x[3]/x[2] a cada producto en la lista para sacar su ratio value-weight
     # Luego, los organiza empezando con el producto con el mejor ratio y terminando con el producto con peor ratio
@@ -27,6 +47,7 @@ def solve_method(products: List[Tuple[str, str, int, int]],
     best_selection = []
     
     def upper_limit(index, leftover_weight, current_value):
+        #Define e
         limit = current_value
         for i in range(index, length):
             pid, name, weight, value = organized_product[i]
@@ -34,7 +55,7 @@ def solve_method(products: List[Tuple[str, str, int, int]],
                 limit += value
                 leftover_weight -= weight
             else: 
-                #fractionally "filling" any remaining capacity by density
+                #Esto es "fractionally filling" la capacidad que queda
                 limit += value * (leftover_weight/weight)
                 break
         return limit
@@ -83,13 +104,37 @@ def benchmarking(C_list, W, trials=5):
         total_results.append(statistics.median(result))
     return total_results
 
-def plot_results(total_results, W, catalog):
+def greedy_benchmarking(C_list, W):
+    result_BnB = []
+    result_Greedy = []
+    for weight in W:
+        value1, _ = solve_method(C_list, weight)
+        value2, _ = solve_greedy(C_list, weight)
+        result_BnB.append(value1)
+        result_Greedy.append(value2)
+    return result_BnB, result_Greedy
+
+
+def plot_runtime_results(total_results, W, catalog):
     plt.figure(figsize=(8,5))
     plt.plot(W, total_results, marker='o', color='red', label='Branch & Bound Median Runtime')
-    plt.yscale('log')
+    plt.yscale('linear')
     plt.xlabel('Weight Capacity')
     plt.ylabel('Median Runtime (ms)')
-    plt.title('Runtime vs Capacity ' + catalog)
+    plt.title(catalog)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+def plot_value_results(result_BnB, result_Greedy, W, catalog):
+    plt.figure(figsize=(8,5))
+    plt.plot(W, result_BnB, marker='o', color='red', label='Branch & Bound Value')
+    plt.plot(W, result_Greedy, marker='x', color='blue', label='Greedy Value')
+    plt.yscale('linear')
+    plt.xlabel('Weight Capacity')
+    plt.ylabel('Value')
+    plt.title(catalog)
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
@@ -98,5 +143,11 @@ def plot_results(total_results, W, catalog):
 results_C1 = benchmarking(C1, W)
 results_C2 = benchmarking(C2, W)
 
-plot_results(results_C1, W, "Catalog 1")
-plot_results(results_C2, W, "Catalog 2")
+plot_runtime_results(results_C1, W, "Runtime vs Capacity Catalog 1")
+plot_runtime_results(results_C2, W, "Runtime vs Capacity Catalog 2")
+
+result_BnB_C1, result_Greedy_C1 = greedy_benchmarking(C1, W)
+result_BnB_C2, result_Greedy_C2  = greedy_benchmarking(C2, W)
+
+plot_value_results(result_BnB_C1, result_Greedy_C1, W, "Value vs Capacity Catalog 1")
+plot_value_results(result_BnB_C2, result_Greedy_C2, W, "Value vs Capacity Catalog 2")

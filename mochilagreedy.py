@@ -1,7 +1,7 @@
 from typing import List, Tuple
 import time
 
-def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> (int, List[str]):
+def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> Tuple[int, List[str]]:
     # Calcular valor y peso para cada producto
     products_with_ratio = []
     for pid, name, weight, value in products:

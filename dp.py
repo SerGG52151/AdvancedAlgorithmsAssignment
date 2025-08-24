@@ -47,7 +47,7 @@ def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> 
     return dp[n][capacity_W]
 
 # Testing function
-def trials(results: List, attempts: int, catalogue: List[Tuple[str, str, int, int]]) -> List[Tuple[Tuple[int, List], float]]:
+def trials(results: List, attempts: int, catalogue: List[Tuple[str, str, int, int]], W: Tuple) -> List[Tuple[Tuple[int, List], float]]:
     for capacity in W:
         addition = 0
         average = 0
@@ -73,33 +73,3 @@ def plotDp(resultsC1: List, resultsC2: List):
     plt.grid()
     plt.legend()
     plt.show()
-
-    
-
-if __name__ == "__main__":
-    resultsC1 = []
-    resultsC2 = []
-
-    resultsC1 = trials(resultsC1, 5, C1)
-    resultsC2 = trials(resultsC2, 5, C2)
-
-    yC1 = [row[1] for row in resultsC1]
-    yC2 = [row[1] for row in resultsC2]
-
-    
-    plt.plot(W, yC1, label='C1', color='blue', marker='o')
-    plt.plot(W, yC2, label='C2', color='red', marker='o')
-    plt.xlabel('Capacity')
-    plt.ylabel('Runtime')
-    plt.title('Runtime vs Capacity')
-    plt.grid()
-    plt.legend()
-    plt.show()
-    
-
-    for row, w in zip(resultsC1, W):
-        print(f"W = {w} | Value / IDs / Time: {row}")
-
-    for row, w in zip(resultsC2, w):
-        print(f"W = {w} | Value / IDs / Time: {row}")
-

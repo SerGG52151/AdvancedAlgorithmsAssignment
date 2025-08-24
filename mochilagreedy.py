@@ -1,4 +1,5 @@
 from typing import List, Tuple
+import time
 
 def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> (int, List[str]):
     # Calcular valor y peso para cada producto
@@ -21,6 +22,20 @@ def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> 
 
     return total_value, chosen_ids
 
+# Testing function
+def trials(results: List, attempts: int, catalogue: List[Tuple[str, str, int, int]], W: Tuple) -> List[Tuple[Tuple[int, List], float]]:
+    for capacity in W:
+        addition = 0
+        average = 0
+        for attempt in range(attempts):
+            start = time.time()
+            result = solve_method(catalogue, capacity)
+            end = time.time()
+            addition += (end - start)
+        average = addition / attempts
+        results.append([result, average])
+    return results
+
 
 # DATOS!!
 
@@ -38,17 +53,4 @@ C2 = [
     ("Q50","Generator",50,150)
 ]
 
-# empieza lo chido
-capacities = [0, 15, 50, 100]   
-print("Catalog C1:")
-for W in capacities:
-    val, ids = solve_method(C1, W)
-    print(f" W={W} -> value={val}, ids={ids}")
 
-print("\nCatalog C2:")
-for W in capacities:
-    val, ids = solve_method(C2, W)
-    print(f" W={W} -> value={val}, ids={ids}")
-
-val, ids = solve_method(C2, 5)
-print("\nCatalog C2 (capacity=5, all too heavy):", val, ids)

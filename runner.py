@@ -1,6 +1,9 @@
 from dp import trials as solve_dp, plotDp
-from Backtracking_Mochila import resolver_mochila as solve_backtracking
-from mochila_greedy import solve_greedy
+from mochilagreedy import trials as solve_greedy
+from BnB import trials as solve_backtracking
+import matplotlib.pyplot as plt
+import numpy as np
+
 
 # Global variables
 W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
@@ -16,6 +19,25 @@ C2 = [("Q10","Assorted Gadgets",10,60),("Q20","Party Drinks Pallet",20,100),
  ("Q50","Generator",50,150)]
 
 
+# Calculate Greedy Solution
+resultsGC1 = []
+resultsGC2 = []
+resultsGC1 = solve_greedy(resultsGC1, 5, C1, W)
+resultsGC2 = solve_greedy(resultsGC2, 5, C2, W)
+
+# Calculate DP Solution
+resultsDPC1 = []
+resultsDPC2 = []
+resultsDPC1 = solve_dp(resultsDPC1, 5, C1, W)
+resultsDPC2 = solve_dp(resultsDPC2, 5, C2, W)
+
+# Calculate Backtracking Solution
+resultsBTC1 = []
+resultsBTC2 = []
+resultsBTC1 = solve_backtracking(resultsBTC1, 5, C1, W)
+resultsBTC2 = solve_backtracking(resultsBTC2, 5, C2, W)
+
+
 def main_menu():
     while True:
         print("\nMain Menu")
@@ -23,49 +45,153 @@ def main_menu():
         print("2. Backtracking Algorithm")
         print("3. Greedy Algorithm")
         print("4. Greedy Value Gap vs Capacity")
-        print("5. Exit")
+        print("5. Runtime vs Capacity")
+        print("6. Exit")
         choice = input("Select an option: ")
 
         if choice == '1': # DP
-            resultsC1 = []
-            resultsC2 = []
-            resultsC1 = solve_dp(resultsC1, 5, C1)
-            resultsC2 = solve_dp(resultsC2, 5, C2)
-
             while True:
                 print("\nDP")
-                print("1. Graph Runtime vs Capacity")
-                print("2. Results")
-                print("3. Exit")
+                print("1. Results")
+                print("2. Exit")
                 choice = input("Select an option: ")
 
                 if choice == '1':
-                    plotDp(resultsC1, resultsC2)
-                elif choice == '2':
-                    for row, w in zip(resultsC1, W):
+                    for row, w in zip(resultsDPC1, W):
                         print('C1: ')
-                        print(f"W = {w} | Value / IDs / Time: {row}")
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
 
                     print('_____')
-                    for row, w in zip(resultsC2, W):
+                    for row, w in zip(resultsDPC2, W):
                         print('C2: ')
-                        print(f"W = {w} | Value / IDs / Time: {row}")
-                    pass
-                elif choice == '3':
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
+                elif choice == '2':
                     break
                 else:
                     print("Invalid option. Please try again.")
 
-            
         elif choice == '2':
-            pass
+            while True:
+                print("\nBacktracking")
+                print("1. Results")
+                print("2. Exit")
+                choice = input("Select an option: ")
+
+                if choice == '1':
+                    for row, w in zip(resultsBTC1, W):
+                        print('C1: ')
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
+
+                    print('_____')
+                    for row, w in zip(resultsBTC2, W):
+                        print('C2: ')
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
+                elif choice == '2':
+                    break
+                else: 
+                    print("Invalid option. Please try again.")
             
         elif choice == '3':
-            pass
+            while True:
+                print("Greedy")
+                print("1. Results")
+                print("2. Exit")
+                choice = input("Select an option: ")
+
+                if choice == '1':
+                    for row, w in zip(resultsGC1, W):
+                        print('C1: ')
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
+
+                    print('_____')
+                    for row, w in zip(resultsGC2, W):
+                        print('C2: ')
+                        print(f"W = {w}")
+                        print(f"Value: {row[0][0]}")
+                        print(f"IDs: {row[0][1]}")
+                        print(f"Time: {row[1]}")
+                elif choice == '2':
+                    break
+                else: 
+                    print("Invalid option. Please try again.")
             
         elif choice == '4':
-            pass
+            yDPC1 = [row[0][0] for row in resultsDPC1]
+            yDPC2 = [row[0][0] for row in resultsDPC2]
+            yBTC1 = [row[0][0] for row in resultsBTC1]
+            yBTC2 = [row[0][0] for row in resultsBTC2]
+            yGC1 = [row[0][0] for row in resultsGC1]
+            yGC2 = [row[0][0] for row in resultsGC2]
+            
+            x = np.arange(len(W))
+            width = 0.25
+
+            plt.bar(x - width, yDPC1, width, label='DP', color='blue')
+            plt.bar(x,        yBTC1, width, label='BT', color='red')
+            plt.bar(x + width, yGC1, width, label='G', color='green')
+            plt.xlabel('Capacity')
+            plt.ylabel('Value')
+            plt.title('C1 Greedy Value Gap vs Capacity')
+            plt.xticks(x, W)
+            plt.grid()
+            plt.legend()
+            plt.show()
+
+            plt.bar(x - width, yDPC2, width, label='DP', color='blue')
+            plt.bar(x,        yBTC2, width, label='BT', color='red')
+            plt.bar(x + width, yGC2, width, label='G', color='green')
+            plt.xlabel('Capacity')
+            plt.ylabel('Value')
+            plt.title('C2 Greedy Value Gap vs Capacity')
+            plt.xticks(x, W)
+            plt.grid()
+            plt.legend()
+            plt.show()
+
         elif choice == '5':
+            yDPC1 = [row[1] for row in resultsDPC1]
+            yDPC2 = [row[1] for row in resultsDPC2]
+            yBTC1 = [row[1] for row in resultsBTC1]
+            yBTC2 = [row[1] for row in resultsBTC2]
+            yGC1 = [row[1] for row in resultsGC1]
+            yGC2 = [row[1] for row in resultsGC2]
+
+            plt.plot(W, yDPC1, label='DP', color='blue', marker='o')
+            plt.plot(W, yBTC1, label='BT', color='red', marker='o')
+            plt.plot(W, yGC1, label='G', color='green', marker='o')
+            plt.xlabel('Capacity')
+            plt.ylabel('Runtime')
+            plt.title('C1 Runtime vs Capacity')
+            plt.grid()
+            plt.legend()
+            plt.show()
+
+            plt.plot(W, yDPC2, label='DP', color='blue', marker='o')
+            plt.plot(W, yBTC2, label='BT', color='red', marker='o')
+            plt.plot(W, yGC2, label='G', color='green', marker='o')
+            plt.xlabel('Capacity')
+            plt.ylabel('Runtime')
+            plt.title('C2 Runtime vs Capacity')
+            plt.grid()
+            plt.legend()
+            plt.show()
+
+        elif choice == '6':
             break
         else:
             print("Invalid option. Please try again.")

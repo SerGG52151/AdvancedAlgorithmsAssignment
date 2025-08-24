@@ -16,7 +16,7 @@ C2 = [("Q10", "Assorted Gadgets", 10, 60), ("Q20", "Party Drinks Pallet", 20, 10
 W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
 
 
-def solve_greedy(products: List[Tuple[str, str, int, int]], capacity_W: int) -> (int, List[str]):
+def solve_greedy(products: List[Tuple[str, str, int, int]], capacity_W: int) -> Tuple[int, List[str]]:
     # Calcular valor y peso para cada producto
     products_with_ratio = []
     for pid, name, weight, value in products:
@@ -56,7 +56,7 @@ def solve_method(products: List[Tuple[str, str, int, int]], capacity_W: int) -> 
             if weight <= leftover_weight:
                 limit += value
                 leftover_weight -= weight
-            eule:
+            else:
                 # Esto es "fractionally filling" la capacidad que queda
                 limit += value * (leftover_weight / weight)
                 break
@@ -153,14 +153,17 @@ def plot_value_results(result_BnB, result_Greedy, W, catalog):
     plt.show()
 
 
-results_C1 = benchmarking(C1, W)
-results_C2 = benchmarking(C2, W)
+# Testing function
+def trials(results: List, attempts: int, catalogue: List[Tuple[str, str, int, int]], W: Tuple) -> List[Tuple[Tuple[int, List], float]]:
+    for capacity in W:
+        addition = 0
+        average = 0
+        for attempt in range(attempts):
+            start = time.time()
+            result = solve_method(catalogue, capacity)
+            end = time.time()
+            addition += (end - start)
+        average = addition / attempts
+        results.append([result, average])
+    return results
 
-plot_runtime_results(results_C1, W, "Runtime vs Capacity Catalog 1")
-plot_runtime_results(results_C2, W, "Runtime vs Capacity Catalog 2")
-
-result_BnB_C1, result_Greedy_C1 = greedy_benchmarking(C1, W)
-result_BnB_C2, result_Greedy_C2 = greedy_benchmarking(C2, W)
-
-plot_value_results(result_BnB_C1, result_Greedy_C1, W, "Value vs Capacity Catalog 1")
-plot_value_results(result_BnB_C2, result_Greedy_C2, W, "Value vs Capacity Catalog 2")

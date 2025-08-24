@@ -1,8 +1,23 @@
+import time
+import statistics
+import matplotlib.pyplot as plt
 from typing import List, Tuple
+
+C1 = [("P01", "Chips Box", 1, 6), ("P02", "Soda Crate", 2, 11), ("P03", "Candy Bulk", 3, 16),
+          ("P04", "Water Pack", 4, 21), ("P05", "Fruit Crate", 5, 26), ("P06", "Ice Cream Bin", 6, 31),
+          ("P07", "BBQ Sauce Case", 7, 36), ("P08", "Snack Variety", 8, 40),
+          ("P09", "Cleaning Supplies", 9, 45), ("P10", "First-Aid Kits", 10, 50)]
+
+C2 = [("Q10", "Assorted Gadgets", 10, 60), ("Q20", "Party Drinks Pallet", 20, 100),
+          ("Q30", "Outdoor Grill", 30, 120), ("Q35", "Mini Freezer", 35, 130),
+          ("Q40", "Tool Chest", 40, 135), ("Q45", "Camp Bundle", 45, 140),
+          ("Q50", "Generator", 50, 150)]
+
+W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
 
 def solve_method(products: List[Tuple[str, str, int, int]],
                  capacity_W: int) -> Tuple[int, List[str]]:
-    
+
     # Aplica la regla x[3]/x[2] a cada producto en la lista para sacar su ratio value-weight
     # Luego, los organiza empezando con el producto con el mejor ratio y terminando con el producto con peor ratio
     organized_product = sorted(products, key=lambda x: x[3]/x[2], reverse=True)
@@ -52,18 +67,36 @@ def solve_method(products: List[Tuple[str, str, int, int]],
     backtrack(0, capacity_W, 0, [])
     return best_value, best_selection
 
-W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
-        
-C1 = [("P01","Chips Box",1,6),("P02","Soda Crate",2,11),("P03","Candy Bulk",3,16),
- ("P04","Water Pack",4,21),("P05","Fruit Crate",5,26),("P06","Ice Cream Bin",6,31),
- ("P07","BBQ Sauce Case",7,36),("P08","Snack Variety",8,40),
- ("P09","Cleaning Supplies",9,45),("P10","First-Aid Kits",10,50)]
+def benchmarking(C_list, W, trials=5):
+    total_results = []
+    for weight in W:
+        result = []
+        for _ in range(trials):
+            start = time.time()
+            value, product_list = solve_method(C_list, weight)
+            end = time.time()
+            duration = (end - start) * 1000
+            print("Maximum Weight: ", weight)
+            print("Value: ", value)
+            print("Product List: ", product_list)
+            result.append(duration)
+        total_results.append(statistics.median(result))
+    return total_results
 
-C2 = [("Q10","Assorted Gadgets",10,60),("Q20","Party Drinks Pallet",20,100),
- ("Q30","Outdoor Grill",30,120),("Q35","Mini Freezer",35,130),
- ("Q40","Tool Chest",40,135),("Q45","Camp Bundle",45,140),
- ("Q50","Generator",50,150)]
+def plot_results(total_results, W, catalog):
+    plt.figure(figsize=(8,5))
+    plt.plot(W, total_results, marker='o', color='red', label='Branch & Bound Median Runtime')
+    plt.yscale('log')
+    plt.xlabel('Weight Capacity')
+    plt.ylabel('Median Runtime (ms)')
+    plt.title('Runtime vs Capacity ' + catalog)
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
 
-value, product_list = solve_method(C1, W[3])
-print("Mejor value:", value)
-print("Productos seleccionados: ", product_list)
+results_C1 = benchmarking(C1, W)
+results_C2 = benchmarking(C2, W)
+
+plot_results(results_C1, W, "Catalog 1")
+plot_results(results_C2, W, "Catalog 2")

@@ -1,4 +1,4 @@
-# DP Method
+# DP Method - Sergio
 from typing import List, Tuple
 import matplotlib.pyplot as plt, time
 
@@ -59,6 +59,21 @@ def trials(results: List, attempts: int, catalogue: List[Tuple[str, str, int, in
         average = addition / attempts
         results.append([result, average])
     return results
+
+def plotDp(resultsC1: List, resultsC2: List):
+
+    yC1 = [row[1] for row in resultsC1]
+    yC2 = [row[1] for row in resultsC2]
+
+    plt.plot(W, yC1, label='C1', color='blue', marker='o')
+    plt.plot(W, yC2, label='C2', color='red', marker='o')
+    plt.xlabel('Capacity')
+    plt.ylabel('Runtime')
+    plt.title('Runtime vs Capacity')
+    plt.grid()
+    plt.legend()
+    plt.show()
+
     
 
 if __name__ == "__main__":
@@ -82,9 +97,9 @@ if __name__ == "__main__":
     plt.show()
     
 
-    for row in resultsC1:
-        print(row)
+    for row, w in zip(resultsC1, W):
+        print(f"W = {w} | Value / IDs / Time: {row}")
 
-    for row in resultsC2:
-        print(row)
+    for row, w in zip(resultsC2, w):
+        print(f"W = {w} | Value / IDs / Time: {row}")
 

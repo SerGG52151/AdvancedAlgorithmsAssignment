@@ -3,54 +3,54 @@ from typing import List, Tuple
 def solve_method(products: List[Tuple[str, str, int, int]],
                  capacity_W: int) -> Tuple[int, List[str]]:
     
-    # Aplica la regla x[3]/x[2] a cada producto en la lista para sacar su ratio valor-peso
+    # Aplica la regla x[3]/x[2] a cada producto en la lista para sacar su ratio value-weight
     # Luego, los organiza empezando con el producto con el mejor ratio y terminando con el producto con peor ratio
-    producto_organizado = sorted(products, key=lambda x: x[3]/x[2], reverse=True)
-    longitud = len(producto_organizado)
+    organized_product = sorted(products, key=lambda x: x[3]/x[2], reverse=True)
+    length = len(organized_product)
     
-    valor_final = 0
-    seleccion_final = []
+    best_value = 0
+    best_selection = []
     
-    def limite_superior(index, peso_restante, current_valor):
-        limite = current_valor
-        for i in range(index, longitud):
-            pid, nombre, peso, valor = producto_organizado[i]
-            if peso <= peso_restante:
-                limite += valor
-                peso_restante -= peso
+    def upper_limit(index, leftover_weight, current_value):
+        limit = current_value
+        for i in range(index, length):
+            pid, name, weight, value = organized_product[i]
+            if weight <= leftover_weight:
+                limit += value
+                leftover_weight -= weight
             else: 
                 #fractionally "filling" any remaining capacity by density
-                limite += valor * (peso_restante/peso)
+                limit += value * (leftover_weight/weight)
                 break
-        return limite
+        return limit
     
-    def backtrack(index, peso_restante, current_valor, ids_seleccionados):
-        nonlocal valor_final, seleccion_final
+    def backtrack(index, leftover_weight, current_value, selected_products):
+        nonlocal best_value, best_selection
         
-        if index == longitud:
-            if current_valor > valor_final:
-                valor_final = current_valor
-                seleccion_final = ids_seleccionados[:]
+        if index == length:
+            if current_value > best_value:
+                best_value = current_value
+                best_selection = selected_products[:]
             return
         
-        ls = limite_superior(index, peso_restante, current_valor)
-        if ls <= valor_final:
+        ls = upper_limit(index, leftover_weight, current_value)
+        if ls <= best_value:
             return
         
-        pid, nombre, peso, valor = producto_organizado[index]
+        pid, name, weight, value = organized_product[index]
         
-        if peso <= peso_restante:
-            ids_seleccionados.append(pid)
-            backtrack(index+1, peso_restante - peso, current_valor + valor, ids_seleccionados)
-            ids_seleccionados.pop()
+        if weight <= leftover_weight:
+            selected_products.append(pid)
+            backtrack(index+1, leftover_weight - weight, current_value + value, selected_products)
+            selected_products.pop()
             
-        backtrack(index+1, peso_restante, current_valor, ids_seleccionados)        
+        backtrack(index+1, leftover_weight, current_value, selected_products)        
     
     if capacity_W <= 0 or not products:
         return (0, [])
     
     backtrack(0, capacity_W, 0, [])
-    return (valor_final, seleccion_final)
+    return best_value, best_selection
 
 W = (0, 5, 20, 35, 50, 65, 80, 95, 110, 140)
         
@@ -64,6 +64,6 @@ C2 = [("Q10","Assorted Gadgets",10,60),("Q20","Party Drinks Pallet",20,100),
  ("Q40","Tool Chest",40,135),("Q45","Camp Bundle",45,140),
  ("Q50","Generator",50,150)]
 
-valor, lista_productos = solve_method(C1, W[3])
-print("Mejor valor:", valor)
-print("Productos seleccionados: ", lista_productos)
+value, product_list = solve_method(C1, W[3])
+print("Mejor value:", value)
+print("Productos seleccionados: ", product_list)

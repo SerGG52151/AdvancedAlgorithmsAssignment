@@ -8,6 +8,7 @@ Hector Aranda Garcia | A01178284
 Sergio Gómez Guerrero | A01571538
 
 
+Github Repo: https://github.com/SerGG52151/AdvancedAlgorithmsAssignment.git
 
 ## Running
 In order to visualize the results run the runner.py file, this will diplay an interactive menu on the terminal used to navigate the results obtained from this work.
